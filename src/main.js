@@ -21,7 +21,7 @@ Vue.use(ElementUI)
 import './assets/css/reset.css'
 
 // 引入过滤器
-import './filter'
+// import './filter'
 
 // 引入公用组件
 import './components'

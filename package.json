@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "axios": "^0.21.0",
+    "echarts": "^4.9.0",
     "element-ui": "^2.14.1",
     "qs": "^6.9.4",
+    "stylus-loader": "^4.3.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.5.1",

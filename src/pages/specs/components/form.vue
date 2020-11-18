@@ -1,16 +1,16 @@
 <template>
   <div>
     <el-dialog :title="info.title" :visible.sync="info.isshow">
-      <el-form>
+      <el-form :rules="rules">
         <!-- 规格名称 -->
-        <el-form-item label="规格名称" label-width="120px">
+        <el-form-item label="规格名称" label-width="120px" prop="specsname">
           <!-- 通过v-model将user绑定到表单上 -->
           <el-input v-model="user.specsname" autocomplete="off"></el-input>
         </el-form-item>
 
         <!-- 规格属性 -->
         <el-form-item label="规格属性" label-width="120px" v-for="(item,index) in attrArr" :key="index">
-          {{attrArr}}
+          <!-- {{attrArr}} -->
           <div class="line">
             <!-- 将attrArr的value绑定到input框中 -->
             <el-input v-model="item.value" autocomplete="off"></el-input>
@@ -44,7 +44,7 @@ import {
 } from "../../../utils/https";
 
 // 引入弹窗
-import { successAlert } from "../../../utils/alert";
+import { errorAlert, successAlert } from "../../../utils/alert";
 
 export default {
   // 接收弹窗状态
@@ -59,6 +59,11 @@ export default {
       },
       //属性值  自己控制自己
       attrArr: [{ value: "" }],
+      rules: {
+        specsname: [
+          { required: true, message: "请输入规格名称", trigger: "blur" },
+        ],
+      },
     };
   },
   computed: {
@@ -95,22 +100,26 @@ export default {
     },
     //点击添加
     add() {
-      // console.log(this.attrArr);//[{value:"s"},{value:"m"},{value:"l"}]--["s","m","l"]
-      // user中的attrs真正要用的是属性值里面的value
-      // 使用map遍历attrArr，取出value，返回新的数组
-      this.user.attrs = JSON.stringify(this.attrArr.map((item) => item.value));
-      //发送添加请求 把user给后台传过去
-      reqspecsAdd(this.user).then((res) => {
-        if (res.data.code === 200) {
-          // 成功弹窗
-          successAlert("添加成功");
-          // 弹窗关闭  清空user和attrArr
-          this.cancel();
-          this.empty();
-          //刷新list 重请总数
-          this.reqList();
-          this.reqCount();
-        }
+      this.check().then(() => {
+        // console.log(this.attrArr);//[{value:"s"},{value:"m"},{value:"l"}]--["s","m","l"]
+        // user中的attrs真正要用的是属性值里面的value
+        // 使用map遍历attrArr，取出value，返回新的数组
+        this.user.attrs = JSON.stringify(
+          this.attrArr.map((item) => item.value)
+        );
+        //发送添加请求 把user给后台传过去
+        reqspecsAdd(this.user).then((res) => {
+          if (res.data.code === 200) {
+            // 成功弹窗
+            successAlert("添加成功");
+            // 弹窗关闭  清空user和attrArr
+            this.cancel();
+            this.empty();
+            //刷新list 重请总数
+            this.reqList();
+            this.reqCount();
+          }
+        });
       });
     },
     // 获取一条信息
@@ -129,21 +138,35 @@ export default {
     },
     // 点击修改
     update() {
-      // 修改属性值格式
-      // JSON.stringify是从一个对象中解析出字符串  展示在页面中的是字符串
-      this.user.attrs = JSON.stringify(this.attrArr.map((item) => item.value));
-      // 发送修改信息的请求
-      reqspecsUpdate(this.user).then((res) => {
-        if (res.data.code === 200) {
-          // 成功弹窗弹出
-          successAlert("修改成功");
-          // 弹窗消失
-          this.cancel();
-          // user清空
-          this.empty();
-          //刷新列表
-          this.reqList();
+      this.check().then(() => {
+        // 修改属性值格式
+        // JSON.stringify是从一个对象中解析出字符串  展示在页面中的是字符串
+        this.user.attrs = JSON.stringify(
+          this.attrArr.map((item) => item.value)
+        );
+        // 发送修改信息的请求
+        reqspecsUpdate(this.user).then((res) => {
+          if (res.data.code === 200) {
+            // 成功弹窗弹出
+            successAlert("修改成功");
+            // 弹窗消失
+            this.cancel();
+            // user清空
+            this.empty();
+            //刷新列表
+            this.reqList();
+          }
+        });
+      });
+    },
+    // 验证
+    check() {
+      return new Promise((resolve, reject) => {
+        if (this.user.specsname === "") {
+          errorAlert("规格名称不能为空");
+          return
         }
+        resolve();
       });
     },
   },

@@ -3,24 +3,10 @@
   <div>
     <el-dialog :title="info.title" :visible.sync="info.isshow">
       <el-form :model="user" :rules="rules">
-        <!--上级分类  -->
-        <el-form-item label="上级分类" label-width="120px"  prop="pid">
+        <!-- 标题 -->
+        <el-form-item label="标题" label-width="120px" prop="title">
           <!-- 通过v-model将user绑定到表单上 -->
-          <el-select v-model="user.pid" placeholder="请选择">
-            <el-option :value="0" label="顶级分类"></el-option>
-            <el-option
-              v-for="item in cateList"
-              :key="item.id"
-              :value="item.id"
-              :label="item.catename"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-
-        <!-- 分类名称 -->
-        <el-form-item label="分类名称" label-width="120px" prop="catename">
-          <!-- 通过v-model将user绑定到表单上 -->
-          <el-input v-model="user.catename" autocomplete="off"></el-input>
+          <el-input v-model="user.title" autocomplete="off"></el-input>
         </el-form-item>
 
         <!-- 图片 -->
@@ -32,19 +18,21 @@
             <!-- 有一个小框：有图片就展示图片没有就不显示 -->
             <img :src="imgUrl" class="img" v-if="imgUrl" />
             <!-- 表单用change事件 -->
-            <input type="file" class="input" @change="changeFile" v-if="info.isshow" />
+            <input type="file" class="input" v-if="info.isshow" @change="changeFile" />
           </div>
         </el-form-item>
-        <!-- 2.element-ui 上传文件 -->
+
         <!-- <el-upload
-          class="avatar-uploader"
           action="#"
-          :show-file-list="false"
-          :on-change="changeFile2"
+          list-type="picture-card"
+          :on-preview="handlePictureCardPreview"
+          :on-remove="handleRemove"
         >
-          <img v-if="imgUrl" :src="imgUrl" class="avatar" />
-          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-        </el-upload>-->
+          <i class="el-icon-plus"></i>
+        </el-upload>
+        <el-dialog :visible.sync="dialogVisible">
+          <img width="100%" :src="dialogImageUrl" alt />
+        </el-dialog> -->
 
         <!--状态 -->
         <el-form-item label="状态" label-width="120px">
@@ -55,7 +43,7 @@
       <!-- 底部  修改 添加 取消 -->
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="add()" v-if="info.title==='添加分类'">添 加</el-button>
+        <el-button type="primary" v-if="info.title==='添加轮播图'" @click="add">添 加</el-button>
         <el-button type="primary" v-else @click="update">修 改</el-button>
       </div>
     </el-dialog>
@@ -65,24 +53,20 @@
 import { mapActions, mapGetters } from "vuex";
 // 引入请求
 import {
-  reqcateAdd,
-  reqcateList,
-  reqcateDetail,
-  reqcateUpdate,
+  reqbannerAdd,
+  reqbannerInfo,
+  reqbannerEdit,
 } from "../../../utils/https";
 // 引入弹窗
 import { successAlert, errorAlert } from "../../../utils/alert";
-// 引入path 使用path.extname 判断后缀名
+// 引入path
 import path from "path";
-
 export default {
-  // 接收弹窗状态
   props: ["info"],
   data() {
     return {
       user: {
-        pid: "",
-        catename: "",
+        title: "",
         img: null,
         status: 1,
       },
@@ -90,50 +74,36 @@ export default {
       imgUrl: "",
       // 验证
       rules: {
-        pid: [{ required: true, message: "请输入上级分类", trigger:"change"}],
-        catename: [{ required: true, message: "请输入分类名称", trigger: "blur" },
-        ],
+        title: [{ required: true, message: "请输入标题", trigger: "blur" }],
       },
     };
   },
   computed: {
-    ...mapGetters({
-      cateList: "cate/cateList",
-    }),
+    ...mapGetters({}),
   },
   methods: {
     ...mapActions({
-      reqList: "cate/reqList",
+      reqList: "banner/reqList",
     }),
-    // 点击取消 弹窗消失
+    // 点击取消
     cancel() {
       this.info.isshow = false;
     },
     // 清空user
     empty() {
       this.user = {
-        pid: "",
-        catename: "",
+        title: "",
         img: null,
         status: 1,
       };
       this.imgUrl = "";
     },
-    //element-ui的上传文件
-    // changeFile2(e) {
-    //   let file = e.raw;
-
-    //   this.imgUrl = URL.createObjectURL(file);
-
-    //   this.user.img = file;
-    // },
     // 点击选择文件
     changeFile(e) {
       // 文件列表：  文件名字 大小 类型 最后修改时间戳
       // console.log(e.target.files[0]);
       //  获取到文件
       let file = e.target.files[0];
-
       //  判断上传的是不是图片  用后缀名判断
       let extname = path.extname(file.name);
       //   console.log(extname);
@@ -142,83 +112,67 @@ export default {
         errorAlert("请上传正确的文件格式！");
         return;
       }
-
       // 判断图片大小  ile.size B ，1M=1024KB 1KB=1024B
       if (file.size > 2 * 1024 * 1024) {
         errorAlert("上传文件不能超过2M！");
         return;
       }
-
       // 给user.img赋值完后，还要显示到页面中
       //URL.createObjectURL(file) 将一个文件生成一个URL地址
       this.imgUrl = URL.createObjectURL(file);
-
       //文件还要传给后端 --- 给user.img赋值
       this.user.img = file;
     },
-
-    // 添加
+    // 点击添加按钮
     add() {
+      // 如果能通过验证再去请求添加
       this.check().then(() => {
-        // console.log(this.user);
-
-        // 发送添加一条信息的请求
-        reqcateAdd(this.user).then((res) => {
-          // 弹出成功弹窗
-          successAlert("添加成功");
-          // 弹窗消失
-          this.cancel();
-          // 清空user
-          this.empty();
-          // 刷新list列表
-          this.reqList();
-        });
-      });
-    },
-
-    // 请求一条数据
-    getOne(id) {
-      reqcateDetail(id).then((res) => {
-        //此刻user没有id
-        this.user = res.data.list;
-
-        // 得到的路径没有http://localhost:3000  所以在vue原型上挂上http，在项目生产时设为空
-        this.imgUrl = this.$imgPre + this.user.img;
-
-        //补id
-        this.user.id = id;
-      });
-    },
-    //修改
-    update() {
-      this.check().then(() => {
-        reqcateUpdate(this.user).then((res) => {
-          // console.log(this.user)
-          if (res.data.code == 200) {
-            //弹成功
-            successAlert("修改成功");
-            //弹框消失
+        reqbannerAdd(this.user).then((res) => {
+          if (res.data.code === 200) {
+            console.log(this.user);
+            successAlert("添加成功");
             this.cancel();
-            //数据清空
             this.empty();
-            //刷新list
             this.reqList();
           }
         });
       });
     },
-    // 验证
+    // 获取一条数据
+    getOne(id) {
+      reqbannerInfo(id).then((res) => {
+        if (res.data.code === 200) {
+          //此刻user没有id
+          this.user = res.data.list;
+          // 得到的路径没有http://localhost:3000  所以在vue原型上挂上http，在项目生产时设为空
+          this.imgUrl = this.$imgPre + this.user.img;
+          //补id
+          this.user.id = id;
+        }
+      });
+    },
+    // 点击修改
+    update() {
+      this.check().then(() => {
+        reqbannerEdit(this.user).then((res) => {
+          if (res.data.code === 200) {
+            console.log(res);
+            successAlert("修改成功");
+            this.cancel();
+            this.empty();
+            this.reqList();
+          }
+        });
+      });
+    },
+    //验证
     check() {
       return new Promise((resolve, reject) => {
-        if (this.user.pid === "") {
-          errorAlert("上级分类不能为空");
-          return
+        if (this.user.title === "") {
+          errorAlert("商品名称不能为空");
+          return;
         }
-        if (this.user.catename === "") {
-          errorAlert("分类名称不能为空");
-          return
-        }
-        resolve()
+        resolve();
       });
     },
   },
@@ -233,7 +187,6 @@ export default {
   border: 1px dashed #ccc;
   position: relative;
 }
-
 .h3 {
   width: 100%;
   height: 100px;
@@ -243,7 +196,6 @@ export default {
   color: #666;
   font-weight: 100;
 }
-
 .input {
   width: 100px;
   height: 100px;
@@ -252,7 +204,6 @@ export default {
   top: 0;
   opacity: 0;
 }
-
 .img {
   width: 100px;
   height: 100px;

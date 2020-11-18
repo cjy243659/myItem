@@ -33,8 +33,6 @@
       <el-table-column prop="name" label="操作">
         <template slot-scope="scope">
           <el-button type="primary" @click="edit(scope.row.uid)">编 辑</el-button>
-          <!-- 调用confirm -->
-          <del-btn @confirm="del(scope.row.uid)"></del-btn>
         </template>
       </el-table-column>
     </el-table>
@@ -42,8 +40,6 @@
 </template>
 <script>
 import { mapActions, mapGetters } from "vuex";
-// 引入请求
-import { reqUserDel, reqUserDetail } from "../../../utils/https";
 
 // 引入弹窗
 import { successAlert } from "../../../utils/alert";
@@ -60,18 +56,6 @@ export default {
     ...mapActions({
       reqList:'vip/reqList'
     }),
-    // 点击删除
-    del(uid) {
-      // 发送删除一条信息的请求
-      reqUserDel(uid).then((res) => {
-        if (res.data.code === 200) {
-          // 弹出成功弹窗
-          successAlert("删除成功");
-          // 通知父组件刷新列表
-          this.$emit("init");
-        }
-      });
-    },
     // 点击编辑
     edit(uid) {
       // 通知父组件点了编辑

@@ -386,7 +386,7 @@ export const reqgoodsDel = (id) => {
         url: BASEURL + "/api/goodsdelete",
         method: "post",
         data: qs.stringify({
-            id:id
+            id: id
         })
     })
 }
@@ -425,29 +425,138 @@ export const reqgoodsCount = () => {
 // ====================会员管理=============================
 
 // 列表
-export const reqmemberList = ()=>{
+export const reqmemberList = () => {
     return axios({
-        url:BASEURL+'/api/memberlist',
-        method:'get'
+        url: BASEURL + '/api/memberlist',
+        method: 'get'
     })
 }
 
 //获取一条信息  修改
-export const reqmemberInfo=(uid)=>{
+export const reqmemberInfo = (uid) => {
     return axios({
-        url:BASEURL+'/api/memberinfo',
-        method:'get',
-        params:{
-            uid:uid
+        url: BASEURL + '/api/memberinfo',
+        method: 'get',
+        params: {
+            uid: uid
         }
     })
 }
 
 // 修改  uid nickname  phone  password  status
-export const reqmemberEdit=(user)=>{
+export const reqmemberEdit = (user) => {
     return axios({
-        url:BASEURL+'/api/memberedit',
-        method:'post',
-        data:qs.stringify(user)
+        url: BASEURL + '/api/memberedit',
+        method: 'post',
+        data: qs.stringify(user)
+    })
+}
+
+// =======================轮播图管理============================
+// 添加
+export const reqbannerAdd = (user) => {
+    // 文件处理
+    let d = new FormData()
+    for (let i in user) {
+        d.append(i, user[i])
+    }
+
+    return axios({
+        url: BASEURL + '/api/banneradd',
+        method: 'post',
+        data: d
+    })
+}
+
+// 列表
+export const reqbannerList = () => {
+    return axios({
+        url: BASEURL + '/api/bannerlist',
+        method: 'get',
+    })
+}
+
+// 获取一条数据 编辑
+export const reqbannerInfo = (id) => {
+    return axios({
+        url: BASEURL + '/api/bannerinfo',
+        method: 'get',
+        params: {
+            id: id
+        }
+    })
+}
+
+// 修改
+export const reqbannerEdit = (user) => {
+    let d = new FormData()
+    for (let i in user) {
+        d.append(i, user[i])
+    }
+    return axios({
+        url: BASEURL + '/api/banneredit',
+        method: 'post',
+        data: d
+    })
+}
+
+//删除
+export const reqbannerDel = (id) => {
+    return axios({
+        url: BASEURL + '/api/bannerdelete',
+        method: 'post',
+        data: qs.stringify({
+            id: id
+        })
+    })
+}
+
+// ====================商品秒杀========================
+
+// 添加
+export const reqseckAdd = (user) => {
+    return axios({
+        url: BASEURL + '/api/seckadd',
+        method: 'post',
+        data: qs.stringify(user)
+    })
+}
+
+// 列表
+export const reqseckList = () => {
+    return axios({
+        url: BASEURL + '/api/secklist',
+        method: 'get',
+    })
+}
+
+// 获取一条数据 编辑
+export const reqseckInfo = (id) => {
+    return axios({
+        url: BASEURL + '/api/seckinfo',
+        method: 'get',
+        params: {
+            id: id
+        }
+    })
+}
+
+// 修改
+export const reqseckEdit = (user) => {
+    return axios({
+        url: BASEURL + '/api/seckedit',
+        method: 'post',
+        data: qs.stringify(user)
+    })
+}
+
+//删除
+export const reqseckDel = (id) => {
+    return axios({
+        url: BASEURL + '/api/seckdelete',
+        method: 'post',
+        data: qs.stringify({
+            id: id
+        })
     })
 }

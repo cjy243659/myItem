@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-dialog :title="info.title" :visible.sync="info.isshow">
-      <el-form :model="user">
+      <el-form :model="user" :rules="rules">
         <!--所属角色  -->
-        <el-form-item label="所属角色" label-width="120px">
+        <el-form-item label="所属角色" label-width="120px" prop="roleid">
           <!-- 通过v-model将user绑定到表单上 -->
           <el-select v-model="user.roleid" placeholder="请选择角色">
             <el-option
@@ -16,7 +16,7 @@
         </el-form-item>
 
         <!-- 用户名 -->
-        <el-form-item label="用户名" label-width="120px">
+        <el-form-item label="用户名" label-width="120px" prop="username">
           <!-- 通过v-model将user绑定到表单上 -->
           <el-input v-model="user.username" autocomplete="off"></el-input>
         </el-form-item>
@@ -52,7 +52,7 @@ import {
 } from "../../../utils/https";
 
 // 引入弹窗
-import { successAlert } from "../../../utils/alert";
+import { errorAlert, successAlert } from "../../../utils/alert";
 
 export default {
   // 接收弹窗状态
@@ -67,6 +67,12 @@ export default {
         username: "",
         password: "",
         status: 1,
+      },
+      // 验证
+      // 验证
+      rules: {
+        roleid: [{ required: true, message: "请输入所属角色", trigger: "change" }],
+        username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
       },
     };
   },
@@ -90,18 +96,20 @@ export default {
     },
     // 点击添加
     add() {
-      // 发送添加一条信息的请求
-      reqUserAdd(this.user).then((res) => {
-        if (res.data.code === 200) {
-          // 弹出成功弹窗
-          successAlert("添加成功");
-          // 成功弹窗消失
-          this.cancel();
-          // user数据清空
-          this.empty();
-          // 通知父组件刷新列表
-          this.$emit("init");
-        }
+      this.check().then(() => {
+        // 发送添加一条信息的请求
+        reqUserAdd(this.user).then((res) => {
+          if (res.data.code === 200) {
+            // 弹出成功弹窗
+            successAlert("添加成功");
+            // 成功弹窗消失
+            this.cancel();
+            // user数据清空
+            this.empty();
+            // 通知父组件刷新列表
+            this.$emit("init");
+          }
+        });
       });
     },
     // 获取一条信息
@@ -115,18 +123,34 @@ export default {
     },
     // 点击修改
     update() {
-      // 发送修改信息的请求
-      reqUserUpdate(this.user).then((res) => {
-        if(res.data.code===200){
-          // 成功弹窗弹出
-          successAlert('修改成功')
-          // 弹窗消失
-          this.cancel()
-          // user清空
-          this.empty()
-          // 通知父组件刷新列表
-          this.$emit('init')
+      this.check().then(() => {
+        // 发送修改信息的请求
+        reqUserUpdate(this.user).then((res) => {
+          if (res.data.code === 200) {
+            // 成功弹窗弹出
+            successAlert("修改成功");
+            // 弹窗消失
+            this.cancel();
+            // user清空
+            this.empty();
+            // 通知父组件刷新列表
+            this.$emit("init");
+          }
+        });
+      });
+    },
+    // 验证
+    check() {
+      return new Promise((resolve, reject) => {
+        if (this.user.roleid === "") {
+          errorAlert("所属角色不能为空");
+          return
         }
+        if (this.user.username === "") {
+          errorAlert("用户名不能为空");
+          return
+        }
+        resolve();
       });
     },
   },

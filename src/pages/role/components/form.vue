@@ -2,10 +2,10 @@
   <div>
     <!-- 标题 -->
     <!-- 绑定close 如果title为编辑则再次打开数据清空 -->
-    <el-dialog title="添加角色" :visible.sync="info.isshow" @close='close'>
-      <el-form :model="user">
+    <el-dialog title="添加角色" :visible.sync="info.isshow" @close="close">
+      <el-form :model="user" :rules="rules">
         <!-- 角色名称 -->
-        <el-form-item label="角色名称" label-width="120px">
+        <el-form-item label="角色名称" label-width="120px" prop="rolename">
           <el-input v-model="user.rolename" autocomplete="off"></el-input>
         </el-form-item>
 
@@ -40,10 +40,15 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 //引入请求
-import { reqMenuList, reqRoleAdd, reqRoleDetail,reqRoleUpdade } from "../../../utils/https";
+import {
+  reqMenuList,
+  reqRoleAdd,
+  reqRoleDetail,
+  reqRoleUpdade,
+} from "../../../utils/https";
 
 // 引入弹窗
-import { successAlert, errorAlert} from "../../../utils/alert";
+import { successAlert, errorAlert } from "../../../utils/alert";
 
 export default {
   // 接收弹窗状态
@@ -57,6 +62,10 @@ export default {
         rolename: "",
         menus: "",
         status: 1,
+      },
+      // 验证
+      rules: {
+        rolename: [{ required: true, message: "请输入角色名称", trigger: "blur" }],
       },
     };
   },
@@ -88,22 +97,24 @@ export default {
         getCheckedKeys:
             若节点可被选择,则返回目前被选中的节点的key所组成的数组,也就是将被勾选的节点赋值给树形控件
       */
-      // 当点击了添加按钮，将被勾选的节点赋值给树形控件
-      this.user.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
-      // 发送添加数据的请求
-      reqRoleAdd(this.user).then((res) => {
-        //   如果code为200的话则成功
-        if (res.data.code === 200) {
-          // 弹出成功弹窗
-          successAlert("添加成功");
-          // 弹窗消失
-          this.cancel();
-          // 清空user数据
-          this.empty();
-          // 刷新角色列表数据 通知父组件要添加一条新的数据了，然后父组件调用list中请求角色列表的方法
-          this.$emit("init");
-        }
-        // 因为每一个组件中都要用到失败弹窗，失败信息也是后台给的，所以讲失败弹窗进行了封装，在后台响应拦截时就自动的把失败的弹窗就弹出来了
+      this.check().then(() => {
+        // 当点击了添加按钮，将被勾选的节点赋值给树形控件
+        this.user.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
+        // 发送添加数据的请求
+        reqRoleAdd(this.user).then((res) => {
+          //   如果code为200的话则成功
+          if (res.data.code === 200) {
+            // 弹出成功弹窗
+            successAlert("添加成功");
+            // 弹窗消失
+            this.cancel();
+            // 清空user数据
+            this.empty();
+            // 刷新角色列表数据 通知父组件要添加一条新的数据了，然后父组件调用list中请求角色列表的方法
+            this.$emit("init");
+          }
+          // 因为每一个组件中都要用到失败弹窗，失败信息也是后台给的，所以讲失败弹窗进行了封装，在后台响应拦截时就自动的把失败的弹窗就弹出来了
+        });
       });
     },
     /* 
@@ -127,24 +138,36 @@ export default {
       });
     },
     // 修改
-    update(){
-        reqRoleUpdade(this.user).then(res=>{
-            // 弹出成功弹窗
-            successAlert('修改成功')
-            // 弹窗消失
-            this.cancel()
-            // 清空user数据
-            this.empty()
-            // 通知父组件刷新列表
-            this.$emit('init')
-        })
+    update() {
+      this.check().then(() => {
+        reqRoleUpdade(this.user).then((res) => {
+          // 弹出成功弹窗
+          successAlert("修改成功");
+          // 弹窗消失
+          this.cancel();
+          // 清空user数据
+          this.empty();
+          // 通知父组件刷新列表
+          this.$emit("init");
+        });
+      });
+    },
+    //验证
+    check() {
+      return new Promise((resolve, reject) => {
+        if (this.user.rolename === "") {
+          errorAlert("角色名称不能为空");
+          return;
+        }
+        resolve();
+      });
     },
     // 如果title为编辑角色，则点了取消，再次打开数据清空，如果不是编辑按钮，不做处理
-    close(){
-        if(this.info.title==='编辑角色'){
-            this.empty()
-        }
-    }
+    close() {
+      if (this.info.title === "编辑角色") {
+        this.empty();
+      }
+    },
   },
   mounted() {
     //请求菜单列表
