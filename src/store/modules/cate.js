@@ -20,6 +20,7 @@ const actions ={
     reqList(context){
         // 发起请求列表的请求
         reqcateList({istree:true}).then(res=>{
+            
             // 成功之后，修改数据
             context.commit("changecateList",res.data.list)
         })

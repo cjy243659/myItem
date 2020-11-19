@@ -17,9 +17,10 @@
           active-text-color="#ffd04b"
           unique-opened
           router
+          default-active="/"
         >
           <!-- 首页 -->
-          <el-menu-item index="/index">
+          <el-menu-item index="/">
             <i class="el-icon-menu"></i>
             <span slot="title">首页</span>
           </el-menu-item>
@@ -30,7 +31,7 @@
             <!-- 如果有 children 的话 说明是目录-->
             <!--  Expected String with value "11", got Number with value 11.
                 要得到的是字符串的值，所以使用隐式转换将数值类型变成字符串
-             -->
+            -->
             <el-submenu :index="item.id+''" v-if="item.children">
               <template slot="title">
                 <!-- 动态图标 -->
@@ -82,7 +83,7 @@
         <!-- 头部 -->
         <el-header>
           <span>{{userInfo.username}}</span>
-          <el-button type='primary'  @click="outLogin()">退出登录</el-button>
+          <el-button type="primary" @click="outLogin()">退出登录</el-button>
         </el-header>
 
         <!-- main -->
@@ -115,16 +116,16 @@ export default {
   },
   methods: {
     ...mapActions({
-      "changeUser":"changeUser"
+      changeUser: "changeUser",
     }),
     // 退出登录
-    outLogin(){
+    outLogin() {
       // 清掉vuex和本地存储---给changeUser传一个空对象
       // 本地存储是在仓库中的数据中存储的，所以要在mutations中改变
-      this.changeUser({})
+      this.changeUser({});
       // 跳转页面
-      this.$router.push('/login')
-    }
+      this.$router.push("/login");
+    },
   },
   mounted() {
     console.log(this.$store);
@@ -138,15 +139,15 @@ export default {
 }
 .el-aside {
   height: 100%;
-  background-color: #20222A;
+  background-color: #20222a;
 }
 .el-header {
-  background: #B3C0D1;
+  background: #b3c0d1;
 }
 .main {
   padding-top: 20px;
 }
-.el-header{
+.el-header {
   text-align: right;
   line-height: 55px;
 }

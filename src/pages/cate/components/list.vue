@@ -20,7 +20,7 @@
           <!-- $imgPre----http://localhost:3000 
               得到的地址没有$imgPre
           -->
-          <img :src="$imgPre+scope.row.img"   alt />
+          <img :src="$imgPre+scope.row.img" v-if='scope.row.pid' alt />
         </template>
       </el-table-column>
 

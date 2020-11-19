@@ -26,7 +26,7 @@
         <!-- 图片 -->
         <!-- 如果用户选择的不是顶级目录图片就显示，如果是顶级目录图片就不显示 -->
         <!-- 原生js上传文件 -->
-        <el-form-item label="图片" label-width="120px" v-if="user.pid!==0">
+        <el-form-item label="图片" label-width="120px" v-if="user.pid!=0">
           <div class="div">
             <h3 class="h3">+</h3>
             <!-- 有一个小框：有图片就展示图片没有就不显示 -->
