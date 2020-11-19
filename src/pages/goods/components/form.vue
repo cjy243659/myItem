@@ -230,7 +230,7 @@ export default {
     },
     // 根据一级分类 拿到二级分类的数据
     changeFirst() {
-      // 二级分类id重置   ？
+      // 二级分类id重置 每一次去请求二级分类数据的时候都要清空之前获取的数据
       this.user.second_cateid = "";
       this.getSecondList();
     },
@@ -256,7 +256,9 @@ export default {
       // this.user.specsid 是商品规格
       // 查找一条数据是否符合条件 并返回一个对象 用find
       let obj = this.specslist.find((item) => item.id === this.user.specsid);
+
       // console.log(obj)
+      // console.log(this.user.specsid)
 
       //将这条数据--obj中的attrs取出来赋值给商品属性的list
       this.attrsList = obj.attrs;
@@ -415,7 +417,7 @@ export default {
     },
   },
   mounted() {
-    // 一进来列表就去请求商品规格和分类
+    // 一进来列表就去请求商品规格和分类 
     this.reqCateList();
     // 参数true，是为了取到所有的规格
     this.reqSpecsList(true);
