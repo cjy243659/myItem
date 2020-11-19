@@ -3,13 +3,13 @@
     <div class="con">
       <h3>登录</h3>
       <div class="line">
-        <el-input v-model="user.username" placeholder="请输入内容"></el-input>
+        <el-input v-model="user.username" placeholder="请输入账号" clearable></el-input>
       </div>
       <div class="line">
-        <el-input placeholder="请输入密码" v-model="user.password" show-password></el-input>
+        <el-input v-model="user.password" placeholder="请输入密码" clearable show-password></el-input>
       </div>
       <div class="last">
-        <el-button type="primary" @click="login">登录</el-button>
+        <el-button type="primary" @click="login" size="">登录</el-button>
       </div>
     </div>
   </div>
@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      "changeUser":"changeUser"
+      changeUser: "changeUser",
     }),
     // 点击登录
     // 登陆成功后，要把data.list存起来，data.list是个对象，存的时候要json.stringify,取的时候要json.parse，有可能登录拦截没有这个值，本地存储会报错，所以存储在vuex内，vuex存在一个问题就是刷新就没了，所以要在本地和vuex各存一份，实现vuex和本地存储同步
@@ -50,7 +50,7 @@ export default {
         successAlert("登陆成功");
         // 写入vuex
         // 触发changeUser方法，就会找到actions里面的方法，把obj传过去
-        this.changeUser(res.data.list)
+        this.changeUser(res.data.list);
         // 跳转页面
         this.$router.push("/");
       });
@@ -65,7 +65,7 @@ export default {
   width: 100vw;
   height: 100vh;
   position: relative;
-  background: linear-gradient(to right, #543444, #403A53, #303D5F);
+  background: linear-gradient(to right, #543444, #403a53, #303d5f);
 }
 .con {
   width: 450px;
@@ -76,21 +76,20 @@ export default {
   top: 50%;
   transform: translate(-50%, -50%);
   border-radius: 20px;
+  line-height: 40px;
 }
 h3 {
   text-align: center;
-  margin: 20px;
+  margin: 10px;
 }
 .line {
+  margin:0 45px;
   margin-bottom: 20px;
-  text-align: center;
 }
 .last {
   text-align: center;
-  margin-bottom: 20px;
 }
-.el-input,
-.el-button {
+.el-button{
   width: 80%;
 }
 </style>
