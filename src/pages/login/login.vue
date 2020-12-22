@@ -9,7 +9,7 @@
         <el-input v-model="user.password" placeholder="请输入密码" clearable show-password></el-input>
       </div>
       <div class="last">
-        <el-button type="primary" @click="login" size="">登录</el-button>
+        <el-button type="primary" @click="login" size>登录</el-button>
       </div>
     </div>
   </div>
@@ -42,17 +42,20 @@ export default {
       changeUser: "changeUser",
     }),
     // 点击登录
-    // 登陆成功后，要把data.list存起来，data.list是个对象，存的时候要json.stringify,取的时候要json.parse，有可能登录拦截没有这个值，本地存储会报错，所以存储在vuex内，vuex存在一个问题就是刷新就没了，所以要在本地和vuex各存一份，实现vuex和本地存储同步
+    // 登陆成功后，要把data.list存起来，data.list是个对象，存的时候要json.stringify,取的时候要json.parse，有可能登录拦截没有这个值，本地存储会报错，所以存储在vuex内，vuex存在一个问题就是刷新就没了(vuex自动更新)，所以要在本地和vuex各存一份，实现vuex和本地存储同步
     login() {
       // 发起登录请求 给后台传一个用户名密码过去
       reqLogin(this.user).then((res) => {
-        // 登陆成功 成功弹窗出现
-        successAlert("登陆成功");
-        // 写入vuex
-        // 触发changeUser方法，就会找到actions里面的方法，把obj传过去
-        this.changeUser(res.data.list);
-        // 跳转页面
-        this.$router.push("/");
+        if (res.data.code === 200) {
+          // 登陆成功 成功弹窗出现
+          successAlert("登陆成功");
+          // 写入vuex
+          // 触发changeUser方法，就会找到actions里面的方法，把obj传过去
+          console.log(res);
+          this.changeUser(res.data.list);
+          // 跳转页面
+          this.$router.push("/");
+        }
       });
     },
   },
@@ -83,13 +86,13 @@ h3 {
   margin: 10px;
 }
 .line {
-  margin:0 45px;
+  margin: 0 45px;
   margin-bottom: 20px;
 }
 .last {
   text-align: center;
 }
-.el-button{
+.el-button {
   width: 80%;
 }
 </style>

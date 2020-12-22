@@ -40,8 +40,11 @@
               </template>
               <el-menu-item-group>
                 <!-- 遍历目录下的菜单 -->
-                <el-menu-item v-for="i in item.children" :key="i.id" :index="i.url">{{i.title}}</el-menu-item>
+                <el-menu-item v-for="i in item.children" :key="i.id" :index="i.url">{{i.title}}
+                  <!-- {{i.url}} -->
+                </el-menu-item>
               </el-menu-item-group>
+              
             </el-submenu>
             <!-- 没有children 就是菜单 没有图标，只需要遍历路径，添加标题就可以了-->
             <el-menu-item v-else :index="item.url">{{item.title}}</el-menu-item>

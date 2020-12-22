@@ -21,7 +21,7 @@ function checkedEnter(path, next) {
 export const routes = [
   {
     path: 'menu', component: () => import('../pages/menu/menu'), name: '菜单管理',
-    // 路由独享守卫
+    // // 路由独享守卫
     beforeEnter: (to, from, next) => {
       checkedEnter('/menu', next)
     }
@@ -63,15 +63,15 @@ export const routes = [
     }
   },
   {
-    path: 'specs', component: () => import("../pages/specs/specs"), name: '商品规格',
+    path: 'spec', component: () => import("../pages/specs/specs"), name: '商品规格',
     beforeEnter: (to, from, next) => {
-      checkedEnter('/specs', next)
+      checkedEnter('/spec', next)
     }
   },
   {
-    path: 'vip', component: () => import("../pages/vip/vip"), name: '会员管理',
+    path: 'member', component: () => import("../pages/vip/vip"), name: '会员管理',
     beforeEnter: (to, from, next) => {
-      checkedEnter('/vip', next)
+      checkedEnter('/member', next)
     }
   },
 ]

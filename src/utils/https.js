@@ -28,7 +28,7 @@ axios.interceptors.request.use(req => {
 // 响应拦截
 axios.interceptors.response.use(res => {
     console.log('本次请求的地址是' + res.config.url)
-    console.log(res)
+    // console.log(res)
     // 统一处理失败弹窗，组件中只需要处理成功就可以了
     // 如果code不是200，就代表操作失败
     if (res.data.code != 200) {

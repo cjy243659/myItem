@@ -104,6 +104,7 @@
                 引入 import E from "wangeditor";
                 创建一个编辑器
           -->
+          <!-- 如果弹窗状态为false的话，就删除div节点，解决编辑器嵌套 -->
           <div v-if="info.isshow" id="edit"></div>
         </el-form-item>
       </el-form>
@@ -317,10 +318,17 @@ export default {
         //this.editor.txt.html() 取值
         this.user.description = this.editor.txt.html();
         //拷贝  后端要的是字符串数组 而user里面的specattr是数组
+        // 用...实现深拷贝 赋值user的数据，改变复制后的user数据原user类型不改变
+        // console.log(typeof(this.user.specsattr)+'22222222')//object
         let d = { ...this.user };
-        // console.log(d);
         d.specsattr = JSON.stringify(d.specsattr);
-        // console.log(d.specsattr)
+        // console.log(typeof(d.specsattr)+'333333333333')//string
+        // console.log(typeof(this.user.specsattr)+'11111111')//object
+
+        /* 直接去转字符串会把原来的user的类型改变，验证过不去 */
+        // this.user.specsattr=JSON.stringify(this.user.specsattr)
+        // console.log(this.user.specsattr)//string
+        
         // 发送请求
         reqgoodsAdd(d).then((res) => {
           if (res.data.code === 200) {

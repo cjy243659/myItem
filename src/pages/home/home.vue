@@ -5,6 +5,7 @@
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
+// 引入图标库
 import echarts from "echarts";
 export default {
   computed: {
@@ -27,11 +28,11 @@ export default {
           // 指定图表的配置项和数据
           var option = {
             title: {
-              text: "前端学习课程天数",
+              text: "商品分类图表",
             },
             tooltip: {},
             legend: {
-              data: ["子分类数量"],
+              data: ["商品数量"],
             },
             xAxis: {
               data: this.cateList.map((item) => item.catename),
@@ -40,7 +41,7 @@ export default {
             // series 数据
             series: [
               {
-                name: "子分类数量",
+                name: "商品数量",
                 type: "bar",
                 data: this.cateList.map((item) =>
                   item.children ? item.children.length : 0

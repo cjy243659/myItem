@@ -157,7 +157,7 @@ export default {
     },
     // 根据一级分类 拿到二级分类的数据
     changeFirst() {
-      // 二级分类id重置   ？
+      // 二级分类id重置  用户每选择不同的一级分类，都要重新请求二级分类
       this.user.second_cateid = "";
       this.getSecondList();
     },
